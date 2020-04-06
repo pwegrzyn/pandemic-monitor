@@ -1,2 +1,2 @@
-# wegpat-gmail.com
+# pandemic-monitor
 pandemic-monitor
