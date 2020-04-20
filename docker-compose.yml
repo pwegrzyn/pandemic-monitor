@@ -1,0 +1,105 @@
+version: '2.3'
+
+# this is the basic app architecture for deployment
+
+services:
+
+  gateway: :
+    restart: always
+    image: nginx
+    build: ./gateway
+    volumes_from:
+     - web-client
+    ports:
+     - "80:80"
+     - "443:443"
+    depends_on:
+     - users-api
+     - location-api
+     - privileged-api
+     - web-client
+
+  users-api:
+    restart: always
+    build: ./users-api
+    env_file:
+     - .env
+    depends_on:
+     - users-db
+
+  location-api:
+    restart: always
+    build: ./location-api
+    env_file:
+     - .env
+    depends_on:
+     - location-db
+
+  privileged-api:
+    restart: always
+    build: ./privileged-api
+    env_file:
+     - .env
+    depends_on:
+     - privileged-db
+
+  users-data:
+    image: postgres
+    volumes:
+     - /var/lib/postgresql
+    command: "true"
+
+  privileged-data:
+    image: postgres
+    volumes:
+     - /var/lib/postgresql
+    command: "true"
+
+  privileged-data:
+    image: influxdb:latest
+    volumes:
+     - /var/lib/influxdb
+    command: "true"
+
+  users-db:
+    restart: always
+    build: ./users-db
+    volumes_from:
+     - users-data
+    ports:
+     - "9009:5432"
+    env_file:
+     - .env
+
+  privileged-db:
+    restart: always
+    build: ./privileged-db
+    volumes_from:
+     - privileged-data
+    ports:
+     - "9008:5432"
+    env_file:
+     - .env
+
+  location-db:
+    restart: always
+    build: ./location-db
+    ports:
+     - "8083:8083"
+     - "8086:8086"
+     - "8090:8090"
+    volumes_from:
+     - location-data
+    env_file:
+     - .env
+  
+  web-client:
+    build: ./web-client
+    volumes:
+     - /usr/share/nginx/html
+
+  queue:
+    # TODO
+
+  worker:
+    # TODO
