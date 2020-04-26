@@ -4,102 +4,116 @@ version: '2.3'
 
 services:
 
-  gateway: :
-    restart: always
-    image: nginx
-    build: ./gateway
-    volumes_from:
-     - web-client
-    ports:
-     - "80:80"
-     - "443:443"
-    depends_on:
-     - users-api
-     - location-api
-     - privileged-api
-     - web-client
+#  gateway: :
+#    restart: always
+#    image: nginx
+#    build: ./gateway
+#    volumes_from:
+#     - web-client
+#    ports:
+#     - "80:80"
+#     - "443:443"
+#    depends_on:
+#     - users-api
+#     - location-api
+#     - privileged-api
+#     - web-client
 
   users-api:
     restart: always
     build: ./users-api
-    env_file:
-     - .env
+    environment:
+      POSTGRES_USER: users-api
+      POSTGRES_PASSWORD: users-api-pass
+      POSTGRES_DB: normal_users
+      POSTGRES_HOST: users-db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./users-api:/usr/src/app/users-api
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
     depends_on:
      - users-db
 
-  location-api:
-    restart: always
-    build: ./location-api
-    env_file:
-     - .env
-    depends_on:
-     - location-db
+#  location-api:
+#    restart: always
+#    build: ./location-api
+#    env_file:
+#     - .env
+#    depends_on:
+#     - location-db
+#
+#  privileged-api:
+#    restart: always
+#    build: ./privileged-api
+#    env_file:
+#     - .env
+#    depends_on:
+#     - privileged-db
 
-  privileged-api:
-    restart: always
-    build: ./privileged-api
-    env_file:
-     - .env
-    depends_on:
-     - privileged-db
+#  users-data:
+#    image: postgres
+#    volumes:
+#     - /var/lib/postgresql
+#    command: "true"
 
-  users-data:
-    image: postgres
-    volumes:
-     - /var/lib/postgresql
-    command: "true"
-
-  privileged-data:
-    image: postgres
-    volumes:
-     - /var/lib/postgresql
-    command: "true"
-
-  privileged-data:
-    image: influxdb:latest
-    volumes:
-     - /var/lib/influxdb
-    command: "true"
+#  privileged-data:
+#    image: postgres
+#    volumes:
+#     - /var/lib/postgresql
+#    command: "true"
+#
+#  privileged-data:
+#    image: influxdb:latest
+#    volumes:
+#     - /var/lib/influxdb
+#    command: "true"
 
   users-db:
     restart: always
+    environment:
+      POSTGRES_USER: users-api
+      POSTGRES_PASSWORD: users-api-pass
+      POSTGRES_DB: users-api-db
     build: ./users-db
-    volumes_from:
-     - users-data
+#    volumes:
+#     - ./users-api-postgres-data:/var/lib/postgresql/data
     ports:
      - "9009:5432"
-    env_file:
-     - .env
+    networks:
+      - default
 
-  privileged-db:
-    restart: always
-    build: ./privileged-db
-    volumes_from:
-     - privileged-data
-    ports:
-     - "9008:5432"
-    env_file:
-     - .env
+#  privileged-db:
+#    restart: always
+#    build: ./privileged-db
+#    volumes_from:
+#     - privileged-data
+#    ports:
+#     - "9008:5432"
+#    env_file:
+#     - .env
 
-  location-db:
-    restart: always
-    build: ./location-db
-    ports:
-     - "8083:8083"
-     - "8086:8086"
-     - "8090:8090"
-    volumes_from:
-     - location-data
-    env_file:
-     - .env
+#  location-db:
+#    restart: always
+#    build: ./location-db
+#    ports:
+#     - "8083:8083"
+#     - "8086:8086"
+#     - "8090:8090"
+#    volumes_from:
+#     - location-data
+#    env_file:
+#     - .env
   
-  web-client:
-    build: ./web-client
-    volumes:
-     - /usr/share/nginx/html
-
-  queue:
-    # TODO
-
-  worker:
-    # TODO
+#  web-client:
+#    build: ./web-client
+#    volumes:
+#     - /usr/share/nginx/html
+#
+#  queue:
+#    # TODO
+#
+#  worker:
+#    # TODO
