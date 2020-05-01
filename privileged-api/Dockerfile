@@ -2,22 +2,13 @@ FROM python:3.7.6-alpine3.11
 
 ENV PYTHONBUFFERED 1
 
-RUN apk --update add libffi-dev postgresql-client postgresql-dev linux-headers gcc musl-dev
-
-RUN mkdir /privileged_api
-
-WORKDIR /privileged_api
-
+WORKDIR /usr/src/app/privileged-api
+COPY ./uwsgi.ini /etc/uwsgi.ini
 COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apk add --no-cache libffi-dev postgresql-client postgresql-dev linux-headers gcc musl-dev && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-COPY ./uwsgi.ini /etc/uwsgi.ini
-
-EXPOSE 5000
-
-RUN echo "Starting Privileged Users API..."
-
-CMD ["uwsgi", "--ini", "/etc/uwsgi.ini", "--lazy-apps"]
+EXPOSE 5001
+ENTRYPOINT uwsgi --ini /etc/uwsgi.ini --wsgi-file app.py --callable app

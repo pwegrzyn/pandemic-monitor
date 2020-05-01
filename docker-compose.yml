@@ -32,8 +32,8 @@ services:
       - ./users-api:/usr/src/app/users-api
     ports:
       - "5000:5000"
-    expose:
-      - "5000"
+#    expose:
+#      - "5000"
     depends_on:
      - users-db
 
@@ -45,13 +45,21 @@ services:
 #    depends_on:
 #     - location-db
 #
-#  privileged-api:
-#    restart: always
-#    build: ./privileged-api
-#    env_file:
-#     - .env
-#    depends_on:
-#     - privileged-db
+  privileged-api:
+    restart: always
+    build: ./privileged-api
+    environment:
+      POSTGRES_USER: privileged-api
+      POSTGRES_PASSWORD: privileged-api-pass
+      POSTGRES_DB: normal_users
+      POSTGRES_HOST: privileged-db
+      POSTGRES_PORT: 5432
+    ports:
+      - "5001:5000"
+#    expose:
+#      - "5000"
+    depends_on:
+     - privileged-db
 
 #  users-data:
 #    image: postgres
@@ -73,27 +81,27 @@ services:
 
   users-db:
     restart: always
+    build: ./users-db
     environment:
       POSTGRES_USER: users-api
       POSTGRES_PASSWORD: users-api-pass
       POSTGRES_DB: users-api-db
-    build: ./users-db
     volumes:
      - ./users-api-postgres-data:/var/lib/postgresql/data
-    ports:
-     - "9009:5432"
     networks:
       - default
 
-#  privileged-db:
-#    restart: always
-#    build: ./privileged-db
-#    volumes_from:
-#     - privileged-data
-#    ports:
-#     - "9008:5432"
-#    env_file:
-#     - .env
+  privileged-db:
+    restart: always
+    build: ./privileged-db
+    environment:
+      POSTGRES_USER: privileged-api
+      POSTGRES_PASSWORD: privileged-api-pass
+      POSTGRES_DB: privileged-api-db
+    volumes:
+      - ./privileged-api-postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
 
 #  location-db:
 #    restart: always
