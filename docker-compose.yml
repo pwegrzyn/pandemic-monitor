@@ -78,8 +78,8 @@ services:
       POSTGRES_PASSWORD: users-api-pass
       POSTGRES_DB: users-api-db
     build: ./users-db
-#    volumes:
-#     - ./users-api-postgres-data:/var/lib/postgresql/data
+    volumes:
+     - ./users-api-postgres-data:/var/lib/postgresql/data
     ports:
      - "9009:5432"
     networks:
