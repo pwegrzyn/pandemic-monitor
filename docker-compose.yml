@@ -25,7 +25,7 @@ services:
     environment:
       POSTGRES_USER: users-api
       POSTGRES_PASSWORD: users-api-pass
-      POSTGRES_DB: normal_users
+      POSTGRES_DB: users-api-db
       POSTGRES_HOST: users-db
       POSTGRES_PORT: 5432
     volumes:
@@ -51,9 +51,10 @@ services:
     environment:
       POSTGRES_USER: privileged-api
       POSTGRES_PASSWORD: privileged-api-pass
-      POSTGRES_DB: normal_users
+      POSTGRES_DB: privileged-api-db
       POSTGRES_HOST: privileged-db
       POSTGRES_PORT: 5432
+      SECRET: secret
     ports:
       - "5001:5000"
 #    expose:
@@ -85,7 +86,7 @@ services:
     environment:
       POSTGRES_USER: users-api
       POSTGRES_PASSWORD: users-api-pass
-      POSTGRES_DB: users-api-db
+#      POSTGRES_DB: users-api-db
     volumes:
      - ./users-api-postgres-data:/var/lib/postgresql/data
     networks:
@@ -97,7 +98,7 @@ services:
     environment:
       POSTGRES_USER: privileged-api
       POSTGRES_PASSWORD: privileged-api-pass
-      POSTGRES_DB: privileged-api-db
+#      POSTGRES_DB: privileged-api-db
     volumes:
       - ./privileged-api-postgres-data:/var/lib/postgresql/data
     networks:

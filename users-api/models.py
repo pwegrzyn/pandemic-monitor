@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from uwsgi_file_app import db
 
-print("MODELS IMPORT")
-
 @dataclass
 class User(db.Model):
     __tablename__ = 'users'
