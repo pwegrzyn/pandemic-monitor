@@ -2,13 +2,10 @@ FROM python:3.7.6-alpine3.11
 
 ENV PYTHONBUFFERED 1
 
-RUN mkdir /location_api
-
-WORKDIR /location_api
-
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apk add --no-cache libffi-dev  linux-headers gcc musl-dev && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
@@ -18,4 +15,4 @@ EXPOSE 5000
 
 RUN echo "Starting Location API..."
 
-CMD ["uwsgi", "--ini", "/etc/uwsgi.ini", "--lazy-apps"]
+CMD ["uwsgi", "--ini", "/etc/uwsgi.ini", "--lazy-apps", "--callable", "app"]
