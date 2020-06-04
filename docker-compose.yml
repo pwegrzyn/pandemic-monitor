@@ -19,13 +19,23 @@ services:
   #    - privileged-api
   #    - web-client
 
-  # users-api:
-  #   restart: always
-  #   build: ./users-api
-  #   env_file:
-  #    - .env
-  #   depends_on:
-  #    - users-db
+  users-api:
+    restart: always
+    build: ./users-api
+    environment:
+      POSTGRES_USER: users-api
+      POSTGRES_PASSWORD: users-api-pass
+      POSTGRES_DB: users-api-db
+      POSTGRES_HOST: users-db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./users-api:/usr/src/app/users-api
+    ports:
+      - "5000:5000"
+#    expose:
+#      - "5000"
+    depends_on:
+     - users-db
 
   location-api:
     restart: always
@@ -37,13 +47,22 @@ services:
     depends_on:
      - influxdb
 
-  # privileged-api:
-  #   restart: always
-  #   build: ./privileged-api
-  #   env_file:
-  #    - .env
-  #   depends_on:
-  #    - privileged-db
+  privileged-api:
+    restart: always
+    build: ./privileged-api
+    environment:
+      POSTGRES_USER: privileged-api
+      POSTGRES_PASSWORD: privileged-api-pass
+      POSTGRES_DB: privileged-api-db
+      POSTGRES_HOST: privileged-db
+      POSTGRES_PORT: 5432
+      SECRET: secret
+    ports:
+      - "5001:5000"
+#    expose:
+#      - "5000"
+    depends_on:
+     - privileged-db
 
   # users-data:
   #   image: postgres
@@ -63,25 +82,29 @@ services:
      - /var/lib/influxdb
     command: "true"
 
-  # users-db:
-  #   restart: always
-  #   build: ./users-db
-  #   volumes_from:
-  #    - users-data
-  #   ports:
-  #    - "9009:5432"
-  #   env_file:
-  #    - .env
+  users-db:
+    restart: always
+    build: ./users-db
+    environment:
+      POSTGRES_USER: users-api
+      POSTGRES_PASSWORD: users-api-pass
+#      POSTGRES_DB: users-api-db
+    volumes:
+     - ./users-api-postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
 
-  # privileged-db:
-  #   restart: always
-  #   build: ./privileged-db
-  #   volumes_from:
-  #    - privileged-data
-  #   ports:
-  #    - "9008:5432"
-  #   env_file:
-  #    - .env
+  privileged-db:
+    restart: always
+    build: ./privileged-db
+    environment:
+      POSTGRES_USER: privileged-api
+      POSTGRES_PASSWORD: privileged-api-pass
+#      POSTGRES_DB: privileged-api-db
+    volumes:
+      - ./privileged-api-postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
 
   influxdb:
     restart: always

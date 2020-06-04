@@ -2,7 +2,7 @@ FROM python:3.7.6-alpine3.11
 
 ENV PYTHONBUFFERED 1
 
-WORKDIR /usr/src/app/privileged-api
+WORKDIR /usr/src/app/users-api
 COPY ./uwsgi.ini /etc/uwsgi.ini
 COPY requirements.txt .
 RUN apk add --no-cache libffi-dev postgresql-client postgresql-dev linux-headers gcc musl-dev && \
@@ -10,5 +10,5 @@ RUN apk add --no-cache libffi-dev postgresql-client postgresql-dev linux-headers
 
 COPY . .
 
-EXPOSE 5001
+EXPOSE 5000
 ENTRYPOINT uwsgi --ini /etc/uwsgi.ini --wsgi-file app.py --callable app
