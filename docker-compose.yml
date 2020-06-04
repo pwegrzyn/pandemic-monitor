@@ -28,12 +28,8 @@ services:
       POSTGRES_DB: users-api-db
       POSTGRES_HOST: users-db
       POSTGRES_PORT: 5432
-    volumes:
-      - ./users-api:/usr/src/app/users-api
     ports:
-      - "5000:5000"
-#    expose:
-#      - "5000"
+     - "5043:5000"
     depends_on:
      - users-db
 
@@ -58,23 +54,21 @@ services:
       POSTGRES_PORT: 5432
       SECRET: secret
     ports:
-      - "5001:5000"
-#    expose:
-#      - "5000"
+      - "5044:5000"
     depends_on:
      - privileged-db
 
-  # users-data:
-  #   image: postgres
-  #   volumes:
-  #    - /var/lib/postgresql
-  #   command: "true"
+  users-data:
+    image: postgres
+    volumes:
+     - /var/lib/postgresql
+    command: "true"
 
-  # privileged-data:
-  #   image: postgres
-  #   volumes:
-  #    - /var/lib/postgresql
-  #   command: "true"
+  privileged-data:
+    image: postgres
+    volumes:
+     - /var/lib/postgresql
+    command: "true"
 
   location-data:
     image: influxdb:1.8
@@ -88,9 +82,10 @@ services:
     environment:
       POSTGRES_USER: users-api
       POSTGRES_PASSWORD: users-api-pass
-#      POSTGRES_DB: users-api-db
-    volumes:
-     - ./users-api-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5438:5432"
+    volumes_from:
+      - users-data
     networks:
       - default
 
@@ -100,9 +95,10 @@ services:
     environment:
       POSTGRES_USER: privileged-api
       POSTGRES_PASSWORD: privileged-api-pass
-#      POSTGRES_DB: privileged-api-db
-    volumes:
-      - ./privileged-api-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5439:5432"
+    volumes_from:
+      - privileged-data
     networks:
       - default
 
@@ -117,11 +113,6 @@ services:
      - location-data
     env_file:
      - .env
-  
-  # web-client:
-  #   build: ./web-client
-  #   volumes:
-  #    - /usr/share/nginx/html
 
   queue:
     build: ./queue
