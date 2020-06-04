@@ -56,10 +56,10 @@ def wait_for_db():
 
 
 def start():
+    wait_for_db()
+
     import api.models
     import api.endpoints
-
-    wait_for_db()
 
     db.create_database(os.getenv("INFLUXDB_DATABASE", "monitor"))
 

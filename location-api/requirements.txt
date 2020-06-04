@@ -4,3 +4,4 @@ uwsgi==2.0.18
 python-dotenv==0.13.0
 flask-cors==3.0.8
 influxdb==5.3.0
+python-geohash==0.8.5

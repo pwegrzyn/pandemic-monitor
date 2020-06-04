@@ -4,7 +4,7 @@ ENV PYTHONBUFFERED 1
 
 COPY requirements.txt .
 
-RUN apk add --no-cache libffi-dev  linux-headers gcc musl-dev && \
+RUN apk add --no-cache libffi-dev  linux-headers gcc musl-dev g++ && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .
