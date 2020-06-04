@@ -1,24 +1,25 @@
-import { Component } from '@angular/core';
-import { Geolocation} from '@capacitor/core';
+import { Component, OnInit } from '@angular/core';
+
+import { IdentificationService } from "../services/identification.service";
+
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit {
 
-  latitude: number;
-  longitude: number;
+  currentIdentityNumber: number;
 
-  constructor() {
-    this.getLocation();
+  constructor(private identificationService: IdentificationService) {
+    
   }
 
-  async getLocation() {
-    const position = await Geolocation.getCurrentPosition();
-    this.latitude = position.coords.latitude;
-    this.longitude = position.coords.longitude;
+  ngOnInit(): void {
+    this.identificationService.getIdentity().subscribe((val) => {
+      this.currentIdentityNumber = val;
+    });
   }
 
 }
