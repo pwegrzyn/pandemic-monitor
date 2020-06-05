@@ -28,6 +28,8 @@ class SingleUser(Resource):
         user = User.query.filter_by(id=id).first()
         if "status" in request.form.keys(): user.status = request.form["status"]
         db.session.commit()
+        if request.form["status"] == "covid_positive":
+            self._prepare_filtering_job()
         return jsonify(user)
 
     def delete(self, id):
@@ -35,3 +37,9 @@ class SingleUser(Resource):
         db.session.delete(user)
         db.session.commit()
         return jsonify(user)
+
+    def _prepare_filtering_job(self):
+        """
+        Here we create the task and put it on the job queue.
+        """
+        pass
