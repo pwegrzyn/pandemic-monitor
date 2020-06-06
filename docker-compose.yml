@@ -53,6 +53,8 @@ services:
       POSTGRES_HOST: privileged-db
       POSTGRES_PORT: 5432
       SECRET: secret
+    volumes:
+      - ./privileged-api:/usr/src/app/privileged-api
     ports:
       - "5049:5000"
     depends_on:

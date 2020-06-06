@@ -8,3 +8,4 @@ sqlalchemy_utils
 pyjwt==1.4.2
 flask-bcrypt
 requests
+flask-cors==3.0.8

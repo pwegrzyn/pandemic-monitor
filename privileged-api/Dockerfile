@@ -14,5 +14,4 @@ RUN apk add --no-cache libffi-dev postgresql-client postgresql-dev linux-headers
 COPY . .
 
 EXPOSE 5000
-
-CMD ["uwsgi", "--ini", "/etc/uwsgi.ini", "--lazy-apps", "--callable", "app"]
+CMD ["uwsgi", "--ini", "/etc/uwsgi.ini", "--wsgi-file", "app.py", "--lazy-apps", "--callable", "app"]

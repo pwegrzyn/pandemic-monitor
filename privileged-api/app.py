@@ -6,6 +6,7 @@ import sqlalchemy_utils
 import logging
 import os
 import time
+from flask_cors import CORS
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,8 +18,10 @@ port = os.environ["POSTGRES_PORT"]
 CONNECT_STRING = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
 app = Flask(__name__)
+
 api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = CONNECT_STRING
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
@@ -34,6 +37,16 @@ def wait_for_db():
             pass
         print("Failed to connect to database")
         time.sleep(1)
+
+CORS(
+    app=app,
+    origins=["*"],
+    expose_headers=None,
+    allow_headers="*",
+    max_age=None,
+    send_wildcard=False,
+    vary_header=True,
+)
 
 
 def start():

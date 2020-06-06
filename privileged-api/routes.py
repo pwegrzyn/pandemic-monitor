@@ -19,15 +19,19 @@ normal_user_fields = {
 
 @api.route("/auth/register")
 class UserRegistration(Resource):
-    def post(self):
-        post_data = request.get_json()
-        user = PrivilegedUser.query.filter_by(email=post_data.get("email")).first()
 
+    def get(self):
+        return {"ok": "OK"}
+
+    def post(self):
+        print("register")
+        print(request.get_json())
+        print(request.form.keys())
+        post_data = request.get_json()
+        user = PrivilegedUser.query.filter_by(email=post_data.get('email')).first()
         if not user:
             try:
-                new_user = PrivilegedUser(
-                    post_data.get("email"), post_data.get("password")
-                )
+                new_user = PrivilegedUser(post_data.get('email'), post_data.get('password'))
 
                 db.session.add(new_user)
                 db.session.commit()
@@ -35,7 +39,7 @@ class UserRegistration(Resource):
                 response = {
                     "message": "Successfully registered",
                     "status": "success",
-                    "auth_token": auth_token.decode(),
+                    "auth_token": auth_token.decode()
                 }
                 return response
 
@@ -48,6 +52,7 @@ class UserRegistration(Resource):
 @api.route("/auth/login")
 class UserLogin(Resource):
     def post(self):
+        print("login")
         post_data = request.get_json()
         try:
             user = PrivilegedUser.query.filter_by(email=post_data.get("email")).first()
@@ -114,7 +119,7 @@ class NormalUsers(Resource):
             return {"message": "Invalid token", "status": "fail"}, 401
 
 
-@api.route("/normal-user/<int:id>")
+@api.route("/normal-users/<int:id>")
 class NormalUserRes(Resource):
     def get(self, id):
         auth_token = request.headers.get("Authorization")
@@ -123,7 +128,9 @@ class NormalUserRes(Resource):
             resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
                 user = NormalUser.query.filter_by(id=id).first()
-                return jsonify(user)
+                # print(user)
+                return {"ok": "OK"}
+                # return {"status": "success", "email": user.email, "user_status": user.status}
             else:
                 return {"message": resp, "status": "fail"}, 401
         else:
@@ -160,8 +167,8 @@ class NormalUserRes(Resource):
                 user_api_id = user.user_api_id
                 if "status" in post_data.keys():
                     status = post_data["status"]
-                    user.status = status
-                    db.session.commit()
+                    # user.status = status
+                    # db.session.commit()
                     resp = requests.put(
                         "http://users-api:5000/users/{user_api_id}".format(
                             user_api_id=user_api_id
