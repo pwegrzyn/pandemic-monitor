@@ -150,13 +150,11 @@ class NormalUserRes(Resource):
 
     @marshal_with(normal_user_fields)
     def post(self, id):
-        #auth_token = request.headers.get("Authorization")
-        auth_token = True
+        auth_token = request.headers.get("Authorization")
         post_data = request.get_json()
 
         if auth_token:
-            #resp = PrivilegedUser.decode_auth_token(auth_token)
-            resp = 1
+            resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
                 user = NormalUser.query.filter_by(id=id).first()
                 user_api_id = user.user_api_id
