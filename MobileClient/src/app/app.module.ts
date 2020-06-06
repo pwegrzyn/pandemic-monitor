@@ -15,6 +15,7 @@ import { IonicStorageModule } from '@ionic/storage';
 
 import { IdentificationService } from './services/identification.service';
 import { SynchronizationService } from './services/synchronization.service';
+import { FetchingService } from './services/fetching.service';
 
 import { HTTP } from '@ionic-native/http/ngx';
 
@@ -29,6 +30,7 @@ import { HTTP } from '@ionic-native/http/ngx';
     Geolocation,
     IdentificationService,
     SynchronizationService,
+    FetchingService,
     HTTP,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

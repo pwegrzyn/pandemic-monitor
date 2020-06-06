@@ -55,10 +55,15 @@ class UserByUUID(Resource):
     
     @marshal_with(user_fields)
     def get(self, uuid):
-        found_user = User.query.filter_by(uuid=uuid).first()
-        if found_user is None:
-            api.abort(404, "User does not exist.")
-        return found_user, 200
+        user = User.query.filter_by(uuid=uuid).first()
+        if user is None:
+            # we should really return 404 here and don't do POST magic 
+            # in a GET request but this will make some thing much easier...
+            user = User(uuid=uuid)
+            db.session.add(user)
+            db.session.flush()
+            db.session.commit()
+        return user, 200
 
 
 @api.route("/users/<int:id>")

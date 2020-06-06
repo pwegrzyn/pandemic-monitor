@@ -125,12 +125,22 @@ class PyWorker:
                 return False
 
             influx_dt_template = "%Y-%m-%dT%H:%M:%SZ"
+            fallback_influx_dt_template = "%Y-%m-%dT%H:%M:%S.%fZ"
+
             diagnozed_time = diagnozed_data[diagonzed_idx]["time"]
             if type(diagnozed_time) == str:
-                diagnozed_time = datetime.datetime.strptime(diagnozed_time, influx_dt_template)
+                try:
+                    diagnozed_time = datetime.datetime.strptime(diagnozed_time, influx_dt_template)
+                except ValueError:
+                    diagnozed_time = datetime.datetime.strptime(diagnozed_time, fallback_influx_dt_template)
+
+
             checked_time = to_check_data[to_check_idx]["time"]
             if type(checked_time) == str:
-                checked_time = datetime.datetime.strptime(checked_time, influx_dt_template)
+                try:
+                    checked_time = datetime.datetime.strptime(checked_time, influx_dt_template)
+                except ValueError:
+                    checked_time = datetime.datetime.strptime(checked_time, fallback_influx_dt_template)
 
             diagnozed_lat = diagnozed_data[diagonzed_idx]["lat"]
             diagnozed_lng = diagnozed_data[diagonzed_idx]["lng"]

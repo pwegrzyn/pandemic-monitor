@@ -80,6 +80,10 @@ class GeoLocation(Resource):
         # TODO: check the authorization ID from headers
         args = post_reqparser.parse_args()
 
+        # Ionic GeoLocation sends us timestamps in milliseconds, but
+        # InfluxDB by default treats the time as nanoseconds
+        timestamp = int(args["timestamp"]) * 1_000_000
+        
         json_body = [
             {
                 "measurement": "user_locations",
@@ -87,7 +91,7 @@ class GeoLocation(Resource):
                     "user_id": args["identifier"],
                     "geohash": geohash.encode(args["latitude"], args["longitude"]),
                 },
-                "time": args["timestamp"],
+                "time": timestamp,
                 "fields": {"lat": args["latitude"], "lng": args["longitude"],},
             }
         ]
