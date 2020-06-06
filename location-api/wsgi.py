@@ -8,6 +8,8 @@ from influxdb import InfluxDBClient
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+logging.basicConfig(level=logging.INFO)
+
 # loading default env values from the .env file
 load_dotenv()
 

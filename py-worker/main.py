@@ -2,6 +2,11 @@ import logging
 import os
 import time
 
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 from dotenv import load_dotenv
 
 from lib.queue import RedisQueue
@@ -23,14 +28,14 @@ def listen_for_jobs():
     )
     worker = PyWorker()
 
-    logging.info("Starting to listen for jobs...")
+    logger.info("Starting to listen for jobs...")
 
     while True:
         try:
             job = queue.get_job(blocking=True)
             worker.execute(job)
         except Exception as e:
-            logging.warning(f"Got an exception while listening for jobs:\n {e}")
+            logger.warning(f"Got an exception while listening for jobs:\n {e}")
             time.sleep(1)
 
 

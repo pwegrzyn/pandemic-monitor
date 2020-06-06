@@ -23,13 +23,13 @@ services:
     restart: always
     build: ./users-api
     environment:
-      POSTGRES_USER: users-api
-      POSTGRES_PASSWORD: users-api-pass
-      POSTGRES_DB: users-api-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users_api_db
       POSTGRES_HOST: users-db
       POSTGRES_PORT: 5432
     ports:
-     - "5043:5000"
+     - "5048:5000"
     depends_on:
      - users-db
 
@@ -47,14 +47,14 @@ services:
     restart: always
     build: ./privileged-api
     environment:
-      POSTGRES_USER: privileged-api
-      POSTGRES_PASSWORD: privileged-api-pass
-      POSTGRES_DB: privileged-api-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: privileged_api_db
       POSTGRES_HOST: privileged-db
       POSTGRES_PORT: 5432
       SECRET: secret
     ports:
-      - "5044:5000"
+      - "5049:5000"
     depends_on:
      - privileged-db
 
@@ -79,11 +79,8 @@ services:
   users-db:
     restart: always
     build: ./users-db
-    environment:
-      POSTGRES_USER: users-api
-      POSTGRES_PASSWORD: users-api-pass
     ports:
-      - "5438:5432"
+      - "5538:5432"
     volumes_from:
       - users-data
     networks:
@@ -92,11 +89,8 @@ services:
   privileged-db:
     restart: always
     build: ./privileged-db
-    environment:
-      POSTGRES_USER: privileged-api
-      POSTGRES_PASSWORD: privileged-api-pass
     ports:
-      - "5439:5432"
+      - "5539:5432"
     volumes_from:
       - privileged-data
     networks:
@@ -120,7 +114,7 @@ services:
   py-worker:
     build: ./py-worker
     restart: always
-    scale: 2
+    scale: 3
     depends_on:
      - queue
     env_file:

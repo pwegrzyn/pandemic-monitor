@@ -1,1 +1,1 @@
-CREATE DATABASE privileged-api-db;
+CREATE DATABASE privileged_api_db;

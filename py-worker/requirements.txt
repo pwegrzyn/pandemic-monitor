@@ -1,2 +1,4 @@
 redis==3.5.2
 python-dotenv==0.13.0
+requests
+geopy==1.22.0

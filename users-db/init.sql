@@ -1,1 +1,1 @@
-CREATE DATABASE users-api-db;
+CREATE DATABASE users_api_db;

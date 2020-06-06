@@ -1,19 +1,33 @@
 from flask import jsonify, request
-from flask_restx import Resource, abort
-from uwsgi_file_app import api, db
-from models import *
+from flask_restx import Resource, abort, reqparse, fields, marshal_with
+from app import api, db, bcrypt
+from models import PrivilegedUser, NormalUser
 import requests
+import logging
 
-@api.route('/auth/register')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+normal_user_fields = {
+    "id": fields.Integer,
+    "user_api_id": fields.Integer,
+    "status": fields.String,
+    "name": fields.String,
+    "surname": fields.String
+}
+
+
+@api.route("/auth/register")
 class UserRegistration(Resource):
-
     def post(self):
         post_data = request.get_json()
-        user = PrivilegedUser.query.filter_by(email=post_data.get('email')).first()
+        user = PrivilegedUser.query.filter_by(email=post_data.get("email")).first()
 
         if not user:
             try:
-                new_user = PrivilegedUser(post_data.get('email'), post_data.get('password'))
+                new_user = PrivilegedUser(
+                    post_data.get("email"), post_data.get("password")
+                )
 
                 db.session.add(new_user)
                 db.session.commit()
@@ -21,7 +35,7 @@ class UserRegistration(Resource):
                 response = {
                     "message": "Successfully registered",
                     "status": "success",
-                    "auth_token": auth_token.decode()
+                    "auth_token": auth_token.decode(),
                 }
                 return response
 
@@ -31,22 +45,23 @@ class UserRegistration(Resource):
             return {"message": "User already registered", "status": "fail"}, 202
 
 
-@api.route('/auth/login')
+@api.route("/auth/login")
 class UserLogin(Resource):
-
     def post(self):
         post_data = request.get_json()
         try:
-            user = PrivilegedUser.query.filter_by(email=post_data.get('email')).first()
+            user = PrivilegedUser.query.filter_by(email=post_data.get("email")).first()
             if user:
-                if bcrypt.check_password_hash(user.pass_hash, post_data.get('password')):
+                if bcrypt.check_password_hash(
+                    user.pass_hash, post_data.get("password")
+                ):
 
                     auth_token = PrivilegedUser.encode_auth_token(user.id)
                     if auth_token:
                         response = {
-                            'status': 'success',
-                            'message': 'Successfully logged in',
-                            'auth_token': auth_token.decode()
+                            "status": "success",
+                            "message": "Successfully logged in",
+                            "auth_token": auth_token.decode(),
                         }
                         return response
                 else:
@@ -59,11 +74,10 @@ class UserLogin(Resource):
             return {"message": "Login failed", "status": "fail"}, 500
 
 
-@api.route('/privileged-users')
+@api.route("/privileged-users")
 class PrivilegedUsers(Resource):
-
     def get(self):
-        auth_token = request.headers.get('Authorization')
+        auth_token = request.headers.get("Authorization")
 
         if auth_token:
             resp = PrivilegedUser.decode_auth_token(auth_token)
@@ -74,8 +88,8 @@ class PrivilegedUsers(Resource):
                     "data": {
                         "user_id": user.id,
                         "email": user.email,
-                        "pass_hash": user.pass_hash
-                    }
+                        "pass_hash": user.pass_hash,
+                    },
                 }
                 return response
             else:
@@ -84,30 +98,26 @@ class PrivilegedUsers(Resource):
             return {"message": "Invalid token", "status": "fail"}, 401
 
 
-
-@api.route('/normal-users')
+@api.route("/normal-users")
 class NormalUsers(Resource):
-
     def get(self):
-        auth_token = request.headers.get('Authorization')
+        auth_token = request.headers.get("Authorization")
 
         if auth_token:
             resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
                 users = NormalUser.query.all()
-                return jsonify(users)
+                return users, 200
             else:
                 return {"message": resp, "status": "fail"}, 401
         else:
             return {"message": "Invalid token", "status": "fail"}, 401
 
 
-
-@api.route('/normal-user/<int:id>')
-class NormalUser(Resource):
-
+@api.route("/normal-user/<int:id>")
+class NormalUserRes(Resource):
     def get(self, id):
-        auth_token = request.headers.get('Authorization')
+        auth_token = request.headers.get("Authorization")
 
         if auth_token:
             resp = PrivilegedUser.decode_auth_token(auth_token)
@@ -119,9 +129,8 @@ class NormalUser(Resource):
         else:
             return {"message": "Invalid token", "status": "fail"}, 401
 
-
-    def put(self, user_api_id):
-        auth_token = request.headers.get('Authorization')
+    def put(self, id):
+        auth_token = request.headers.get("Authorization")
         post_data = request.get_json()
 
         if auth_token:
@@ -129,7 +138,7 @@ class NormalUser(Resource):
             if not isinstance(resp, str):
                 name = post_data["name"]
                 surname = post_data["name"]
-                user = NormalUser(user_api_id, name, surname)
+                user = NormalUser(id, name, surname)
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
@@ -139,12 +148,15 @@ class NormalUser(Resource):
         else:
             return {"message": "Invalid token", "status": "fail"}, 401
 
+    @marshal_with(normal_user_fields)
     def post(self, id):
-        auth_token = request.headers.get('Authorization')
+        #auth_token = request.headers.get("Authorization")
+        auth_token = True
         post_data = request.get_json()
 
         if auth_token:
-            resp = PrivilegedUser.decode_auth_token(auth_token)
+            #resp = PrivilegedUser.decode_auth_token(auth_token)
+            resp = 1
             if not isinstance(resp, str):
                 user = NormalUser.query.filter_by(id=id).first()
                 user_api_id = user.user_api_id
@@ -152,9 +164,60 @@ class NormalUser(Resource):
                     status = post_data["status"]
                     user.status = status
                     db.session.commit()
-                    requests.post("users-api:5000/users/{user_api_id}".format(user_api_id=user_api_id), data={"status": status})
-                return jsonify(user)
+                    resp = requests.put(
+                        "http://users-api:5000/users/{user_api_id}".format(
+                            user_api_id=user_api_id
+                        ),
+                        json={"status": status},
+                    )
+                    if resp.status_code != 200:
+                        logger.warning(
+                            f"Error while updating the status of the normal user in the Users API:\n{resp}"
+                        )
+                        api.abort(500, "Error while updating user status in Users API.")
+                return user, 200
             else:
-                return {"message": resp, "status": "fail"}, 401
+                api.abort(401, str(resp))
         else:
-            return {"message": "Invalid token", "status": "fail"}, 401
+            api.abort(401, "Invalid token")
+
+
+@api.route("/normal-user-test")
+class NormalUserResForTesting(Resource):
+    """
+    I created the classes below only for testing, we can delete them later - Patryk.
+    """
+
+    post_reqparser = reqparse.RequestParser()
+    post_reqparser.add_argument(
+        "user_api_id",
+        type=int,
+        location="json",
+        required=True,
+    )
+    post_reqparser.add_argument(
+        "name",
+        type=str,
+        location="json",
+        required=True,
+    )
+    post_reqparser.add_argument(
+        "surname",
+        type=str,
+        location="json",
+        required=True,
+    )
+
+    @marshal_with(normal_user_fields)
+    def get(self):
+        users = NormalUser.query.all()
+        return users, 200
+
+    @marshal_with(normal_user_fields)
+    def post(self):
+        args = self.post_reqparser.parse_args()
+        user = NormalUser(args["user_api_id"], args["name"], args["surname"])
+        db.session.add(user)
+        db.session.flush()
+        db.session.commit()
+        return user, 201
