@@ -1,0 +1,33 @@
+<!--<label for="userId">UserId </label>-->
+<!--<input #userIdInput type="text" id="userId" placeholder="find user" [(ngModel)]="userId" name="userId" required>-->
+<!--<button type="submit" class="btn btn-default" (click)="onFindUser(userIdInput.value)">Search</button>-->
+
+<div class="center">
+  <mat-card>
+      <mat-card-title>Patient management</mat-card-title>
+      <hr><br>
+      <mat-card-content>
+        <form>
+          <p>
+            <mat-form-field>
+              <label for="userId">Get patient information</label>
+              <div>
+                <input #userIdInput type="text" id="userId" placeholder="user id" [(ngModel)]="userId" name="userId" required>
+                <button mat-button (click)="onFindUser(userIdInput.value)" style="position: absolute; right: 0">Search</button>
+              </div>
+            </mat-form-field>
+          </p>
+          <hr>
+          <p>
+            <mat-form-field>
+                <div class="button">
+                  <button mat-button (click)="onAddUser()">Add new patient</button>
+                  <button type="submit" mat-button (click)="onLogout()" style="position: absolute; left: 0">Logout</button>
+              </div>
+            </mat-form-field>
+          </p>
+        </form>
+      </mat-card-content>
+    </mat-card>
+</div>
+

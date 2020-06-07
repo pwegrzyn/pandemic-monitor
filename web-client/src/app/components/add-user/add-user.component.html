@@ -1,0 +1,30 @@
+<div class="center">
+  <mat-card>
+      <mat-card-title>Add new patient</mat-card-title>
+      <hr>
+      <mat-card-content>
+        <form>
+          <p>
+            <mat-form-field>
+              <input type="text" matInput placeholder="Name" name="name" [(ngModel)]="normalUser.name" name="name" required>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field>
+              <input type="text" matInput placeholder="Surname" name="password" [(ngModel)]="normalUser.surname" name="surname" required>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field>
+              <input type="text" matInput placeholder="User ID" name="uuid" [(ngModel)]="normalUser.user_api_id" name="uuid" required>
+            </mat-form-field>
+          </p>
+          <div class="button">
+            <button type="submit" mat-button style="position: absolute; left: 0;" (click)="onCancel()">Cancel</button>
+            <button type="submit" mat-button (click)="onAddUser()">Create</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+</div>
+
