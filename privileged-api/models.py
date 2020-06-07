@@ -28,7 +28,7 @@ class PrivilegedUser(db.Model):
         try:
             payload = {
                 "exp": datetime.datetime.utcnow()
-                + datetime.timedelta(days=0, seconds=60),
+                + datetime.timedelta(days=1, seconds=0),
                 "iat": datetime.datetime.utcnow(),
                 "sub": email,
             }

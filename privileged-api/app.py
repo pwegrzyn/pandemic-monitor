@@ -38,15 +38,26 @@ def wait_for_db():
         print("Failed to connect to database")
         time.sleep(1)
 
-CORS(
-    app=app,
-    origins=["*"],
-    expose_headers=None,
-    allow_headers="*",
-    max_age=None,
-    send_wildcard=False,
-    vary_header=True,
-)
+
+@app.after_request
+def after_request(response):
+    print("after_request")
+    print(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+# CORS(
+#     app=app,
+#     origins="*",
+#     expose_headers=None,
+#     allow_headers="*",
+#     max_age=None,
+#     send_wildcard=False,
+#     vary_header=True,
+#     supports_credentials=True
+# )
 
 
 def start():

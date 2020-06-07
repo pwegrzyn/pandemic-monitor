@@ -12,6 +12,7 @@ export class FindUserComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
+    console.log("init")
   }
 
   onFindUser(userId: string) {

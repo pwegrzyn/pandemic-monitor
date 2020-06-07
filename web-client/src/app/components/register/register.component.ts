@@ -17,6 +17,7 @@ export class RegisterComponent {
     this.auth.register(this.user)
       .then((user) => {
         console.log(user.json())
+        this.router.navigateByUrl('/login')
       })
       .catch((err) => {
         console.log("catch");

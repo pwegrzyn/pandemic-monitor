@@ -127,10 +127,11 @@ class NormalUserRes(Resource):
         if auth_token:
             resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
-                user = NormalUser.query.filter_by(id=id).first()
-                # print(user)
-                return {"ok": "OK"}
-                # return {"status": "success", "email": user.email, "user_status": user.status}
+                user = NormalUser.query.filter_by(user_api_id=id).first()
+                if user:
+                    return {"status": "success", "name": user.name, "surname": user.surname, "user_status": user.status}
+                else:
+                    return {"message": "User not found", "status": "fail"}, 404
             else:
                 return {"message": resp, "status": "fail"}, 401
         else:
@@ -144,12 +145,12 @@ class NormalUserRes(Resource):
             resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
                 name = post_data["name"]
-                surname = post_data["name"]
+                surname = post_data["surname"]
                 user = NormalUser(id, name, surname)
                 db.session.add(user)
                 db.session.flush()
                 db.session.commit()
-                return jsonify(user)
+                return {"status": "success", "message": "Added new user", "user_api_id": user.user_api_id}
             else:
                 return {"message": resp, "status": "fail"}, 401
         else:
@@ -163,24 +164,27 @@ class NormalUserRes(Resource):
         if auth_token:
             resp = PrivilegedUser.decode_auth_token(auth_token)
             if not isinstance(resp, str):
-                user = NormalUser.query.filter_by(id=id).first()
-                user_api_id = user.user_api_id
-                if "status" in post_data.keys():
-                    status = post_data["status"]
-                    # user.status = status
-                    # db.session.commit()
-                    resp = requests.put(
-                        "http://users-api:5000/users/{user_api_id}".format(
-                            user_api_id=user_api_id
-                        ),
-                        json={"status": status},
-                    )
-                    if resp.status_code != 200:
-                        logger.warning(
-                            f"Error while updating the status of the normal user in the Users API:\n{resp}"
+                user = NormalUser.query.filter_by(user_api_id=id).first()
+                if user:
+                    user_api_id = user.user_api_id
+                    if "status" in post_data.keys():
+                        status = post_data["status"]
+                        user.status = status
+                        db.session.commit()
+                        resp = requests.put(
+                            "http://users-api:5000/users/{user_api_id}".format(
+                                user_api_id=user_api_id
+                            ),
+                            json={"status": status},
                         )
-                        api.abort(500, "Error while updating user status in Users API.")
-                return user, 200
+                        if resp.status_code != 200:
+                            logger.warning(
+                                f"Error while updating the status of the normal user in the Users API:\n{resp}"
+                            )
+                            api.abort(500, "Error while updating user status in Users API.")
+                    return user, 200
+                else:
+                    return {"message": "User not found", "status": "fail"}, 404
             else:
                 api.abort(401, str(resp))
         else:

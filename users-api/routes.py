@@ -80,14 +80,14 @@ class SingleUser(Resource):
 
     @marshal_with(user_fields)
     def get(self, id):
-        found_user = User.query.filter_by(id=id).first()
+        found_user = User.query.filter_by(uuid=id).first()
         if found_user is None:
             api.abort(404, "User does not exist.")
         return found_user, 200
 
     @marshal_with(user_fields)
     def put(self, id):
-        user = User.query.filter_by(id=id).first()
+        user = User.query.filter_by(uuid=id).first()
         if user is None:
             api.abort(404, "User does not exist.")
 
@@ -100,7 +100,7 @@ class SingleUser(Resource):
         return user, 200
 
     def delete(self, id):
-        user = User.query.filter_by(id=id).first()
+        user = User.query.filter_by(uuid=id).first()
         if user is None:
             api.abort(404, "User does not exist.")
 

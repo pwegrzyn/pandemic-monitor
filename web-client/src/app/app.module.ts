@@ -11,6 +11,8 @@ import { RegisterComponent } from './components/register/register.component';
 import { StatusComponent } from './components/status/status.component';
 import { UserManagementService } from "./services/user-management.service";
 import { FindUserComponent } from './components/find-user/find-user.component';
+import { AddUserComponent } from './components/add-user/add-user.component';
+import { EnsureAuthenticatedService } from "./services/ensure-authenticated.service";
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { FindUserComponent } from './components/find-user/find-user.component';
     LoginComponent,
     RegisterComponent,
     StatusComponent,
-    FindUserComponent
+    FindUserComponent,
+    AddUserComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +29,7 @@ import { FindUserComponent } from './components/find-user/find-user.component';
     HttpModule,
     FormsModule
   ],
-  providers: [AuthService, UserManagementService],
+  providers: [AuthService, UserManagementService, EnsureAuthenticatedService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
