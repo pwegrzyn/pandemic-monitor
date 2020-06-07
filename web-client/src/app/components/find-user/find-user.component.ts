@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
+import {AuthService} from "../../services/auth.service";
+import {UserManagementService} from "../../services/user-management.service";
 
 @Component({
   selector: 'app-find-user',
@@ -9,7 +11,7 @@ import {Router} from "@angular/router";
 export class FindUserComponent implements OnInit {
   userId: string;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private auth: AuthService) { }
 
   ngOnInit() {
     console.log("init")
@@ -17,5 +19,13 @@ export class FindUserComponent implements OnInit {
 
   onFindUser(userId: string) {
     this.router.navigateByUrl('/users/' + userId)
+  }
+
+  onLogout() {
+    this.auth.logout()
+  }
+
+  onAddUser() {
+    this.router.navigateByUrl('/users/create')
   }
 }

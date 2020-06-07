@@ -12,7 +12,8 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'users', component: FindUserComponent, canActivate: [EnsureAuthenticatedService]},
   {path: 'users/create', component: AddUserComponent,  canActivate: [EnsureAuthenticatedService]},
-  {path: 'users/:userId', component: StatusComponent, canActivate: [EnsureAuthenticatedService]}
+  {path: 'users/:userId', component: StatusComponent, canActivate: [EnsureAuthenticatedService]},
+  {path : '', component : LoginComponent}
 ];
 
 @NgModule({
