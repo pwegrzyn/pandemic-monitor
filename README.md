@@ -14,7 +14,7 @@ docker-compose build
 docker-compose up
 ```
 
-This will bring up 3 services, a job queue and a bunch of workers.
+This will bring up 3 microservices, a job queue and a scalable group of worker processes.
 
 To use the Android app - navigate to the MobileClient directory and follow the instructions
 layed down in the README file.
