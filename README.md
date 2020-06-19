@@ -7,14 +7,13 @@ backend. When a patien is diagonsed with COVID-19, the user gets a notification 
 if they had potentially been in contact with this person in the last days.
 
 ## Getting Started:
-Just use docker-compose to setup the backend
+The backend is implemented in the spirit of microservices. To get started just use docker-compose to setup the backend
 
 ```bash
-docker-compose build
-docker-compose up
+docker-compose up --build
 ```
 
 This will bring up 3 microservices, a job queue and a scalable group of worker processes.
 
 To use the Android app - navigate to the MobileClient directory and follow the instructions
-layed down in the README file.
+layed down in the README file. The Angular web client is located in the web-client directory.
